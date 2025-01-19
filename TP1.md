@@ -219,7 +219,7 @@ include /usr/share/nginx/modules/*.conf;
 #        include /etc/nginx/default.d/*.conf; 
 ```
 
-
+<>
 cat /etc/nginx/nginx.conf | grep "user"
 ```
 user nginx;
@@ -234,8 +234,54 @@ user nginx;
 
 ### 🌞 Créer un site web
 
+```sudo mkdir /var/www/tp1_parc```
 
+```touch index.html```
 
 
 
 ### 🌞 Gérer les permissions
+
+
+sudo chmod 777
+
+### 🌞 Adapter la conf NGINX
+```sudo nano /etc/nginx/nginx.conf```
+
+supprimer le server {}
+
+puis ```sudo nginx -t```
+```
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
+```sudo nano /etc/nginx/conf.d/tp1_parc.conf```
+```server {
+    listen       63392;
+    server_name  localhost;
+
+    root         /var/www/tp1_parc;
+    index        index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+```sudo firewall-cmd --zone=public --add-port=63392/tcp --permanent```
+
+http://10.1.1.101:63392
+
+
+# III. Monitoring et alerting
+
+
+### 🌞 Installer Netdata
+
+
+
+## 2. Un peu d'analyse de service
+
+```sudo systemctl start netdata```
+
+sudo lsof -i -P -n | grep netdata 
