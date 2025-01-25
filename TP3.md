@@ -9,17 +9,17 @@ log() {
 log_warn() {
     echo "$(date '+%H:%M:%S') [WARN] $1"
 }
-# Démarrage du script
+
 log "Le script d'autoconfiguration a démarré."
 
-# Vérifie si le script est exécuté en tant que root
+
 if [ "$EUID" -ne 0 ]; then
     echo " Ca doit etre lancé en root frérot. Réassaye."
     exit 1
 fi
 log "Le script a bien été lancé en root."
 
-# Vérifie et désactive SELinux si nécessaire
+
 if ! sestatus | grep -q "Current mode: permissive"; then
     log_warn "SELinux est toujours activé !"
     log "Désactivation de SELinux temporaire"
@@ -28,14 +28,14 @@ if ! sestatus | grep -q "Current mode: permissive"; then
     sed -i 's/^SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
 fi
 
-# Vérifie si le firewall est activé
+
 if ! systemctl is-active --quiet firewalld; then
     echo "[ERROR] Le service firewalld n'est pas actif. Quitte."
     exit 1
 fi
 log "Service de firewalling firewalld est activé."
 
-# Vérifie et modifie le port SSH si nécessaire
+
 ssh_port=$(ss -tuln | grep ssh | awk -F: '{print $2}')
 if [ "$ssh_port" == "22" ]; then
     new_port=$((1025 + RANDOM % 64510))
@@ -61,7 +61,7 @@ else
     log "Le nom de la machine est déjà configuré : $current_hostname"
 fi
 
-# Ajoute l'utilisateur "admin" au groupe "wheel" si nécessaire
+
 admin_user="fariasgomes"
 if ! id -nG "$admin_user" | grep -qw "wheel"; then
     log_warn "L'utilisateur $admin_user n'est pas dans le groupe wheel !"
